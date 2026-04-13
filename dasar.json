@@ -1,0 +1,58 @@
+{
+  "system_name": "POS-Kasir Web Application",
+  "domain": "Retail / UMKM / Point of Sale",
+  "description": "A web-based POS system to manage products, transactions, stock, and sales reports.",
+  "actors": {
+    "admin": {
+      "permissions": [
+        "manage_products",
+        "manage_stock",
+        "manage_users",
+        "view_reports",
+        "export_reports"
+      ]
+    },
+    "cashier": {
+      "permissions": [
+        "process_transactions",
+        "view_transaction_history",
+        "print_receipts"
+      ]
+    }
+  },
+  "core_modules": [
+    "authentication",
+    "product_management",
+    "transaction_processing",
+    "stock_management",
+    "reporting",
+    "receipt_generation"
+  ],
+  "business_rules": [
+    "stock_cannot_be_negative",
+    "transactions_must_be_atomic",
+    "product_price_is_locked_at_transaction_time",
+    "only_admin_can_manage_products"
+  ],
+  "data_entities": {
+    "product": ["id", "name", "price", "stock"],
+    "transaction": ["id", "user_id", "total_amount", "payment_method", "created_at"],
+    "transaction_item": ["id", "transaction_id", "product_id", "quantity", "price"]
+  },
+  "architecture": {
+    "pattern": "Clean Architecture / Service-Repository",
+    "layers": [
+      "controller",
+      "request_validation",
+      "service_business_logic",
+      "repository_data_access",
+      "entity_model"
+    ]
+  },
+  "technology_stack": {
+    "backend": "Laravel",
+    "database": "MySQL",
+    "frontend": "Blade, JavaScript, Tailwind CSS",
+    "authentication": "Laravel Breeze"
+  }
+}
