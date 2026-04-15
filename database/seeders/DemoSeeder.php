@@ -93,7 +93,7 @@ class DemoSeeder extends Seeder
         ]);
     }
 
-    protected function createProducts(): \Illuminate\Database\Eloquent\Collection
+    protected function createProducts(): \Illuminate\Support\Collection
     {
         $productData = [
             // Makanan Instan
@@ -206,31 +206,31 @@ class DemoSeeder extends Seeder
 
     protected function createStockAdjustments($products, $admin, $kasir): void
     {
-        // Restock adjustment
+        // Restock adjustment (type: in)
         StockAdjustment::create([
             'product_id' => $products->random()->id,
             'user_id' => $admin->id,
-            'type' => 'restock',
+            'type' => 'in',
             'quantity' => 50,
-            'reason' => 'Restock mingguan dari supplier',
+            'notes' => 'Restock mingguan dari supplier',
         ]);
 
-        // Stock correction
+        // Stock correction (type: out - produk rusak)
         StockAdjustment::create([
             'product_id' => $products->random()->id,
             'user_id' => $kasir->id,
-            'type' => 'correction',
-            'quantity' => -3,
-            'reason' => 'Koreksi stok - produk rusak',
+            'type' => 'out',
+            'quantity' => 3,
+            'notes' => 'Koreksi stok - produk rusak',
         ]);
 
-        // Stock opname
+        // Stock opname (type: in - selisih positif)
         StockAdjustment::create([
             'product_id' => $products->random()->id,
             'user_id' => $admin->id,
-            'type' => 'opname',
+            'type' => 'in',
             'quantity' => 5,
-            'reason' => 'Selisih stock opname',
+            'notes' => 'Selisih stock opname',
         ]);
     }
 

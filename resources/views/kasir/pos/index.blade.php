@@ -19,13 +19,16 @@
 
         /* Focus styles for keyboard navigation */
         .product-btn:focus { outline: 3px solid #818cf8; outline-offset: 2px; }
-        
+
         /* Toast Animation */
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
         .toast-enter { animation: slideIn 0.3s ease-out; }
+
+        /* Cloak to prevent flash on load */
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 
@@ -276,7 +279,7 @@
         </div>
 
         <!-- Toast Container -->
-        <div x-show="toasts.length > 0" class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 flex flex-col gap-3 pointer-events-none">
+        <div x-show="toasts.length > 0" x-cloak class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 flex flex-col gap-3 pointer-events-none">
             <template x-for="(toast, index) in toasts" :key="index">
                 <div 
                     class="toast-enter pointer-events-auto max-w-sm bg-white rounded-lg shadow-lg border-l-4 p-4 flex items-center gap-3 min-w-[300px]"
@@ -361,6 +364,22 @@
                 toasts: [],
                 focusedProductIndex: -1,
 
+                init() {
+                    // Reset all state on page load to prevent glitches
+                    this.showSuccessModal = false;
+                    this.lastTransaction = null;
+                    this.toasts = [];
+                    this.isLoading = false;
+                    this.cart = [];
+                    this.cashReceived = 0;
+
+                    // Clear state when page unloads
+                    window.addEventListener('beforeunload', () => {
+                        this.showSuccessModal = false;
+                        this.toasts = [];
+                    });
+                },
+
                 get cartTotal() {
                     return this.cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
                 },
@@ -427,7 +446,6 @@
                             quantity: 1
                         });
                     }
-                    this.showToast(`Ditambahkan: ${product.name}`, 'success');
                 },
 
                 incrementQty(index) {
@@ -448,16 +466,13 @@
                 },
 
                 removeFromCart(index) {
-                    const item = this.cart[index];
                     this.cart.splice(index, 1);
-                    this.showToast(`Dihapus: ${item.product.name}`, 'info');
                 },
 
                 clearCart() {
                     if (confirm('Apakah Anda yakin ingin mengosongkan keranjang?')) {
                         this.cart = [];
                         this.cashReceived = 0;
-                        this.showToast('Keranjang dikosongkan', 'info');
                     }
                 },
 
@@ -481,10 +496,9 @@
                             e.preventDefault();
                             this.$refs.searchInput.focus();
                             break;
-                        case 'F2': 
+                        case 'F2':
                             e.preventDefault();
                             this.setCash(this.cartTotal);
-                            this.showToast('Uang Pas', 'info');
                             break;
                         case 'F3':
                         case 'Enter':

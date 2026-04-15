@@ -12,7 +12,7 @@
 
 POS KASIR MU adalah aplikasi Point of Sale (POS) berbasis web yang dirancang untuk membantu pengusaha UMKM mengelola transaksi, stok barang, hingga laporan keuangan dengan cara yang sangat mudah dan profesional.
 
-[Fitur Utama](#-fitur-utama) • [Teknologi](#-teknologi) • [Instalasi](#-instalasi-cepat) • [Dokumentasi Lengkap](DOKUMENTASI.md)
+[Fitur Utama](#-fitur-utama) • [Teknologi](#-teknologi) • [Instalasi](#-instalasi-cepat) • [Desktop App](#-desktop-application) • [Dokumentasi Lengkap](DOKUMENTASI.md)
 
 </div>
 
@@ -59,6 +59,42 @@ Dibangun dengan stack teknologi modern untuk performa dan skalabilitas:
 - **Security**: Rate Limiting, Pessimistic Locking, Activity Logging, Cache Management
 - **Architecture**: Repository & Service Pattern (Clean Architecture)
 - **Testing**: Laravel Factories & Seeders untuk data testing realistis
+- **Desktop**: NativePHP (Electron) untuk aplikasi desktop native
+
+---
+
+## 🖥️ Desktop Application
+
+Aplikasi ini juga bisa dijalankan sebagai **desktop application native** menggunakan NativePHP (Electron).
+
+### **Keunggulan Desktop App:**
+
+✅ **Offline Ready** - Tidak perlu browser atau internet  
+✅ **SQLite Local** - Database tersimpan lokal (lebih cepat & aman)  
+✅ **Native Notifications** - Notifikasi desktop system  
+✅ **Printer Integration** - Print receipt langsung ke printer  
+✅ **Auto-Update** - Update otomatis via GitHub/S3  
+✅ **One-Click Installer** - File `.exe` untuk Windows  
+
+### **Setup Desktop App:**
+
+```bash
+# 1. Install Electron dependencies
+php artisan native:install
+
+# 2. Run desktop app (development)
+php artisan native:run
+
+# 3. Build untuk Windows (.exe)
+php artisan native:build win
+```
+
+Output installer akan ada di:
+```
+nativephp/electron/dist/POS Kasir MU Setup 1.0.0.exe
+```
+
+📖 **Dokumentasi Lengkap:** [DESKTOP-SETUP.md](DESKTOP-SETUP.md)
 
 ---
 
@@ -96,7 +132,8 @@ php artisan migrate
 php artisan db:seed
 
 # Opsi 2: Database dengan Data Demo Lengkap (Recommended untuk Testing)
-php artisan migrate:fresh --seed --class=DemoSeeder
+php artisan migrate:fresh
+php artisan db:seed --class=DemoSeeder
 
 # Build Frontend
 npm run build

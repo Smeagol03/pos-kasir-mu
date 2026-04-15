@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Notifications\LowStockAlert;
 use App\Repositories\ProductRepository;
+use App\Services\NativeNotificationService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Notification;
 
@@ -26,10 +26,10 @@ class CheckLowStockCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(ProductRepository $productRepository): void
+    public function handle(ProductRepository $productRepository, NativeNotificationService $nativeNotification): void
     {
         $threshold = $this->option('threshold');
-        
+
         $this->info("Checking for products with stock below {$threshold}...");
 
         $lowStockProducts = $productRepository->getLowStock($threshold, 100); // Get up to 100 low stock products
@@ -50,14 +50,17 @@ class CheckLowStockCommand extends Command
         $notifiedCount = 0;
         foreach ($lowStockProducts as $product) {
             // Use Notification::send() to batch-send notifications efficiently
-            Notification::send($adminUsers, new LowStockAlert($product));
+            Notification::send($adminUsers, new \App\Notifications\LowStockAlert($product));
             $notifiedCount++;
 
             $this->info("Notified about low stock for: {$product->name} ({$product->stock} remaining)");
         }
 
+        // Show native desktop notification
+        $nativeNotification->lowStockAlert($lowStockProducts->count());
+
         $this->info("Sent notifications for {$notifiedCount} products with low stock.");
-        
+
         \Log::info('Low stock check completed', [
             'threshold' => $threshold,
             'products_count' => $lowStockProducts->count(),
